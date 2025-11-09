@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PLAMA - ระบบผู้ช่วยสอนคณิตศาสตร์ AI แบบปรับแต่งบุคลิกภาพ</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        /* ===========================================
+         * CSS VARIABLES - PLAMA App Theme
+         * =========================================== */
+        :root {
+            /* Primary Colors - Blue tones representing precision, logic and scientific trust */
+            --primary-color: #2C7BE5; /* Main blue - Mathematical precision and logic */
+            --primary-light: #6E8BFC; /* Lighter blue - Mathematical creativity */
+            --primary-dark: #1A56B4; /* Darker blue - Mathematical depth */
+
+            /* Secondary Colors - Professional scientific palette */
+            --secondary-color: #3B4B64; /* Navy blue-gray - Academic tone */
+            --accent-color: #00C9A7; /* Teal - Mathematical insight and interactive elements */
+            --light-color: #F8F9FC; /* Very light blue - Clean background */
+            --dark-color: #12263F; /* Deep navy - Primary text color, high contrast */
+
+            /* Status Colors - Clear visual feedback */
+            --success-color: #00D97E; /* Green - Correct solutions */
+            --warning-color: #F6C343; /* Gold/yellow - Needs refinement */
+            --danger-color: #E63757; /* Soft red - Incorrect solutions */
+            --info-color: #2C7BE5; /* Blue - Informational content */
+        }
+
+        body {
+            font-family: 'Sarabun', sans-serif;
+            background: linear-gradient(135deg, var(--light-color) 0%, #e8f2ff 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            color: var(--dark-color);
+        }
+
+        /* ===== HERO SECTION - PLAMA Style ===== */
+        .hero-section {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 40px 0 80px;
+            position: relative;
+            overflow: hidden;
+            min-height: 90vh;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="50" font-size="60" opacity="0.03">∑π∫√</text></svg>') repeat;
+            pointer-events: none;
+        }
+
+        .innovation-badge {
+            background: linear-gradient(135deg, var(--accent-color), #00a085);
+            color: white;
+            padding: 0.6rem 1.2rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 201, 167, 0.3);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: clamp(2.2rem, 4vw, 3.5rem);
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            line-height: 1.2;
+        }
+
+        .teacher-story-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.8rem;
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .teacher-story-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent-color), rgba(255, 255, 255, 0.5));
+        }
+
+        .teacher-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #00a085);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 1rem;
+            box-shadow: 0 8px 20px rgba(0, 201, 167, 0.3);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .teacher-story-section .btn-outline-light {
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            color: rgba(255, 255, 255, 0.95);
+            transition: all 0.3s ease;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        .teacher-story-section .btn-outline-light:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.9);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .innovations-highlight {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+
+        .innovation-item {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin: 0.5rem 0;
+            border-left: 3px solid var(--accent-color);
+        }
+
+        /* ===== 7-DIMENSIONAL TOOLKIT ===== */
+        .toolkit-section {
+            background: linear-gradient(135deg, var(--light-color) 0%, #f0f7ff 100%);
+            padding: 80px 0 80px;
+            position: relative;
+        }
+
+        .toolkit-mode {
+            background: white;
+            border: 2px solid #e8f2ff;
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(44, 123, 229, 0.08);
+        }
+
+        .toolkit-mode:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            box-shadow: 0 12px 30px rgba(44, 123, 229, 0.15);
+        }
+
+        .toolkit-mode::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .toolkit-mode:hover::before {
+            transform: scaleX(1);
+        }
+
+        .mode-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            margin: 0 auto 1rem;
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.25);
+            transition: all 0.3s ease;
+        }
+
+        .toolkit-mode:hover .mode-icon {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(44, 123, 229, 0.35);
+        }
+
+        /* ===== CROSS-TEMPORAL LEARNING ===== */
+        .temporal-section {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-dark) 100%);
+            padding: 80px 0 80px;
+            color: white;
+            position: relative;
+        }
+
+        .mathematician-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+
+        .mathematician-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mathematician-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 201, 167, 0.2);
+        }
+
+        .mathematician-avatar {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), #00a085);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            color: white;
+            margin: 0 auto 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .mathematician-card:hover .mathematician-avatar {
+            transform: scale(1.1);
+        }
+
+        /* ===== MULTI-AGENT COLLABORATION ===== */
+        .collaboration-section {
+            background: linear-gradient(135deg, #f8faff 0%, var(--light-color) 100%);
+            padding: 80px 0;
+            position: relative;
+        }
+
+        .ai-chat-preview {
+            background: white;
+            border-radius: 15px;
+            padding: 1.8rem;
+            box-shadow: 0 8px 25px rgba(44, 123, 229, 0.1);
+            margin: 1.5rem 0;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e8f2ff;
+        }
+
+        .ai-message {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            color: white;
+            padding: 1rem 1.4rem;
+            border-radius: 18px 18px 18px 4px;
+            margin: 0.5rem 0;
+            max-width: 80%;
+            animation: slideInLeft 0.5s ease;
+            box-shadow: 0 3px 10px rgba(44, 123, 229, 0.2);
+        }
+
+        .ai-message.right {
+            background: linear-gradient(135deg, var(--accent-color), #00a085);
+            border-radius: 18px 18px 4px 18px;
+            margin-left: auto;
+            animation: slideInRight 0.5s ease;
+            box-shadow: 0 3px 10px rgba(0, 201, 167, 0.2);
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 1rem 1.4rem;
+            color: var(--secondary-color);
+            font-weight: 500;
+        }
+
+        .typing-dots {
+            display: flex;
+            margin-left: 0.5rem;
+        }
+
+        .typing-dots span {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            margin: 0 2px;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+
+            0%,
+            60%,
+            100% {
+                transform: translateY(0);
+            }
+
+            30% {
+                transform: translateY(-8px);
+            }
+        }
+
+        .demo-preview {
+            background: rgba(44, 123, 229, 0.05);
+            border: 2px solid rgba(44, 123, 229, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .demo-preview:hover {
+            background: rgba(44, 123, 229, 0.08);
+            border-color: rgba(44, 123, 229, 0.2);
+            transform: translateY(-3px);
+        }
+
+        /* ===== MAIN CTA BUTTON ===== */
+        .main-cta-button {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+            border: none;
+            padding: 1.2rem 2.5rem;
+            border-radius: 25px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(44, 123, 229, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .main-cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .main-cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 35px rgba(44, 123, 229, 0.4);
+            color: white;
+        }
+
+        .main-cta-button:hover::before {
+            left: 100%;
+        }
+
+        /* ===== FEATURE CARDS ===== */
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            border: 1px solid #e8f2ff;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(44, 123, 229, 0.15);
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            margin: 0 auto 1.5rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(44, 123, 229, 0.25);
+        }
+
+        .feature-card:hover .feature-icon {
+            transform: scale(1.05) rotate(3deg);
+        }
+
+        /* ===== INNOVATION BADGES ===== */
+        .innovation-badge {
+            background: linear-gradient(135deg, var(--success-color), #00b86b);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 4px;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .innovation-badge:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 217, 126, 0.3);
+        }
+
+        /* ===== FLOATING ELEMENTS ===== */
+        .floating-elements {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .floating-math {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.08);
+            font-size: clamp(2rem, 4vw, 3.5rem);
+            font-weight: bold;
+            animation: floatGentle 6s ease-in-out infinite;
+            user-select: none;
+        }
+
+        @keyframes floatGentle {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+                opacity: 0.08;
+            }
+
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+                opacity: 0.15;
+            }
+        }
+
+        /* ===== SECTION TITLES ===== */
+        .section-title {
+            position: relative;
+            margin-bottom: 3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(to right, var(--primary-color), var(--accent-color));
+            border-radius: 2px;
+        }
+
+        /* ===== RESPONSIVE IMPROVEMENTS ===== */
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 60px 0;
+                min-height: auto;
+            }
+
+            .teacher-story-section {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+
+            .toolkit-mode {
+                padding: 1.5rem;
+            }
+
+            .main-cta-button {
+                padding: 1rem 2rem;
+                font-size: 1rem;
+                width: 100%;
+                max-width: 320px;
+            }
+
+            .mathematician-grid {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+                gap: 15px;
+            }
+        }
+
+        /* ===== ACCESSIBILITY IMPROVEMENTS ===== */
+        .hero-section *,
+        .toolkit-section *,
+        .temporal-section *,
+        .collaboration-section * {
+            text-rendering: optimizeLegibility;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        .main-cta-button:focus {
+            outline: 3px solid rgba(44, 123, 229, 0.5);
+            outline-offset: 2px;
+        }
+
+        /* ===== HERO LOGO STYLING ===== */
+        .hero-logo svg {
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.15));
+            transition: filter 0.3s ease;
+        }
+
+        .hero-logo:hover svg {
+            filter: drop-shadow(0 12px 30px rgba(0, 0, 0, 0.25));
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Enhanced Hero Section with PLAMA Theme -->
+    <section class="hero-section">
+        <!-- Floating Mathematical Elements -->
+        <div class="floating-elements">
+            <div class="floating-math" style="top: 10%; left: 10%; animation-delay: 0s;">π</div>
+            <div class="floating-math" style="top: 20%; right: 15%; animation-delay: -2s;">∑</div>
+            <div class="floating-math" style="bottom: 20%; left: 20%; animation-delay: -4s;">∫</div>
+            <div class="floating-math" style="bottom: 30%; right: 10%; animation-delay: -1s;">√</div>
+            <div class="floating-math" style="top: 60%; left: 5%; animation-delay: -3s;">∞</div>
+            <div class="floating-math" style="top: 40%; right: 25%; animation-delay: -5s;">Δ</div>
+        </div>
+
+        <div class="container hero-content">
+            <div class="row align-items-center">
+                <!-- Main Content Column -->
+                <div class="col-lg-8">
+                    <!-- Innovation Badge -->
+                    <div class="innovation-badge">
+                        <i class="bi bi-lightbulb-fill me-2"></i>
+                        นวัตกรรมจากครูผู้สร้างสรรค์ประสบการณ์การเรียนรู้ใหม่ผ่านเทคโนโลยี AI
+                    </div>
+
+                    <!-- Main Title -->
+                    <h1 class="hero-title">
+                        <i class="bi bi-robot me-3"></i>PLAMA
+                    </h1>
+
+                    <!-- Journey Subtitle -->
+                    <p class="fs-4 fw-medium mb-4 text-center text-lg-start"
+                        style="color: var(--accent-color); text-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <i class="bi bi-compass me-2"></i>
+                        PLAMA: A Teacher's Journey to Educational Transformation
+                    </p>
+
+                    <!-- Teacher Story Section -->
+                    <div class="teacher-story-section">
+                        <div class="row align-items-center">
+                            <div class="col-md-3 text-center">
+                                <div class="teacher-avatar">
+                                    <i class="bi bi-person-hearts"></i>
+                                </div>
+                                <h6 class="fw-bold">ครูพฤฒิพงศ์ โลหะสุวรรณ์</h6>
+                                <small class="opacity-75">ผู้พัฒนานวัตกรรม</small>
+                            </div>
+                            <div class="col-md-9">
+                                <h5 class="fw-bold mb-3">เรื่องราวของครูที่เปลี่ยนการศึกษาไทย</h5>
+                                <p class="mb-2">
+                                    <strong>"จากครูผู้ถ่ายทอดความรู้ สู่ครูผู้สร้างสรรค์ประสบการณ์การเรียนรู้"</strong>
+                                </p>
+                                <p class="opacity-90">
+                                    เมื่อครูพรึดพบว่านักเรียนในห้องไม่ชอบเรียนคณิตศาสตร์
+                                    เขาไม่ได้แค่ใช้เทคโนโลยีที่มีอยู่
+                                    แต่ได้ออกแบบประสบการณ์การเรียนรู้ใหม่ที่ผสมผสาน AI
+                                    กับเครื่องมือการศึกษาอย่างสร้างสรรค์
+                                    จนกลายเป็น PLAMA - ระบบผู้ช่วยสอนคณิตศาสตร์ที่ไม่เหมือนใครในโลก
+                                </p>
+                                <div class="text-center mt-3">
+                                    <button class="btn btn-outline-light btn-sm" onclick="showTeacherStory()">
+                                        <i class="bi bi-info-circle me-2"></i>เรื่องราวเพิ่มเติม
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <p class="fs-5 mb-4 opacity-95">
+                        ไม่ใช่แค่ AI Chatbot ธรรมดา แต่เป็นระบบที่ <strong>ออกแบบโดยครูเพื่อครู</strong>
+                        เพื่อสร้างประสบการณ์การเรียนรู้คณิตศาสตร์ที่ไม่เหมือนใครผ่านการผสานรวม <strong>5
+                            นวัตกรรมหลัก</strong>
+                    </p>
+
+                    <!-- Description with 5 Core Innovations -->
+                    <div class="innovations-highlight">
+                        <h6 class="fw-bold text-white mb-3">
+                            <i class="bi bi-stars me-2"></i>5 นวัตกรรมหลักที่ทำให้ PLAMA แตกต่าง
+                        </h6>
+                        <div class="innovation-item">
+                            <strong>1. 7-Dimensional Interactive Mathematical Toolkit</strong> - เครื่องมือเชิงโต้ตอบทางคณิตศาสตร์แบบ 7
+                            มิติ
+                        </div>
+                        <div class="innovation-item">
+                            <strong>2. Cross-Temporal Learning Experience</strong> - ประสบการณ์การเรียนรู้ข้ามกาลเวลา
+                        </div>
+                        <div class="innovation-item">
+                            <strong>3. Multi-Agent AI Collaboration System</strong> - ระบบ AI หลายตัวทำงานร่วมกัน
+                        </div>
+                        <div class="innovation-item">
+                            <strong>4. Dual-Mode Educational Architecture</strong> - สถาปัตยกรรมแบบสองโหมดสำหรับครู-นักเรียน
+                        </div>
+                        <div class="innovation-item">
+                            <strong>5. Adaptive AI Reasoning Engine</strong> - เทคโนโลยี AI Reasoning แบบปรับตัวได้
+                        </div>
+                    </div>
+
+                    <!-- School Information -->
+                    <div class="teacher-story-section">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <p class="mb-1">
+                                    <i class="bi bi-building me-2"></i>
+                                    <strong>โรงเรียนสาธิต มหาวิทยาลัยศิลปากร (มัธยมศึกษา)</strong>
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="mb-1">
+                                    <i class="bi bi-calendar3 me-2"></i>
+                                    <strong>ปีการศึกษา:</strong> 2568
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main CTA -->
+                    <div class="text-center text-lg-start mt-4">
+                        <button class="main-cta-button" onclick="startDemo()">
+                            <i class="bi bi-rocket-takeoff me-2"></i>
+                            เริ่มประสบการณ์การเรียนรู้ใหม่กับ PLAMA
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Logo Column -->
+                <div class="col-lg-4 text-center">
+                    <div class="hero-logo">
+                        <svg width="320" height="320" viewBox="0 0 320 320" style="max-width: 100%; height: auto;">
+                            <defs>
+                                <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#6E8BFC;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#2C7BE5;stop-opacity:1" />
+                                </linearGradient>
+                                <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#00C9A7;stop-opacity:1" />
+                                    <stop offset="100%" style="stop-color:#00a085;stop-opacity:1" />
+                                </linearGradient>
+                            </defs>
+                            <circle cx="160" cy="160" r="150" fill="rgba(255,255,255,0.1)"
+                                stroke="rgba(255,255,255,0.3)" stroke-width="2" />
+                            <circle cx="160" cy="160" r="110" fill="rgba(255,255,255,0.15)"
+                                stroke="rgba(255,255,255,0.4)" stroke-width="2" />
+                            <circle cx="160" cy="160" r="80" fill="rgba(255,255,255,0.2)" stroke="url(#accentGradient)"
+                                stroke-width="3" />
+                            <text x="160" y="180" font-family="Sarabun" font-size="55" font-weight="700"
+                                text-anchor="middle" fill="white">PL</text>
+                            <circle cx="160" cy="160" r="70" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="2"
+                                stroke-dasharray="6,6">
+                                <animateTransform attributeName="transform" type="rotate" from="0 160 160"
+                                    to="360 160 160" dur="20s" repeatCount="indefinite" />
+                            </circle>
+                            <circle cx="160" cy="160" r="90" fill="none" stroke="url(#accentGradient)" stroke-width="1"
+                                stroke-dasharray="4,4" opacity="0.7">
+                                <animateTransform attributeName="transform" type="rotate" from="360 160 160"
+                                    to="0 160 160" dur="25s" repeatCount="indefinite" />
+                            </circle>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7-Dimensional Toolkit Section -->
+    <section class="toolkit-section">
+        <div class="container">
+            <h2 class="text-center section-title">
+                7-Dimensional Interactive Mathematical Toolkit
+                <br><small class="fs-6 text-muted">เครื่องมือเชิงโต้ตอบทางคณิตศาสตร์แบบ 7 มิติที่ไม่เหมือนใคร</small>
+            </h2>
+
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-chat-text"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Text Mode</h4>
+                        <p class="text-muted">การสนทนาผ่านข้อความพร้อมระบบ OCR อัจฉริยะ</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-calculator"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Math Mode</h4>
+                        <p class="text-muted">การใส่สูตรคณิตศาสตร์ด้วย LaTeX Editor พร้อมการแสดงผลสูตรแบบเรียลไทม์</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-graph-up"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Graph Mode</h4>
+                        <p class="text-muted">การสร้างกราฟแบบเรียลไทม์ด้วย Desmos Graphing Calculator</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-triangle"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Geometry Mode</h4>
+                        <p class="text-muted">การสร้างรูปเรขาคณิตแบบโต้ตอบด้วย Desmos Geometry</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-box"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">3D Mode</h4>
+                        <p class="text-muted">การสร้างรูปเรขาคณิตสามมิติด้วย Desmos 3D Calculator</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-palette"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Canvas Mode</h4>
+                        <p class="text-muted">การแก้สมการแบบลากวาง (Drag-and-drop) ด้วย Graspable Math</p>
+                    </div>
+                </div>
+
+                <div class="col-lg-4">
+                    <div class="toolkit-mode">
+                        <div class="mode-icon">
+                            <i class="bi bi-grid-3x3"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">Tiles Mode</h4>
+                        <p class="text-muted">การเรียนรู้ผ่าน Mathematical manipulatives แบบโต้ตอบ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cross-Temporal Learning Experience -->
+    <section class="temporal-section">
+        <div class="container">
+            <h2 class="text-center section-title text-white">
+                Cross-Temporal Learning Experience
+                <br><small class="fs-6 opacity-75">ประสบการณ์การเรียนรู้ข้ามกาลเวลากับนักคณิตศาสตร์ในตำนาน 15 คน</small>
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-8 mx-auto text-center mb-4">
+                    <div
+                        style="background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); border-radius: 12px; padding: 1.5rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                        <h5 class="text-white mb-3">เรียนรู้กับนักคณิตศาสตร์ชื่อดังจากประวัติศาสตร์</h5>
+                        <p class="text-white-50">แต่ละคนมี Teaching Style และความเชียวชาญที่แตกต่างกัน
+                            พร้อมบุคลิกภาพเฉพาะตัว ที่เดินทางข้ามเวลามาสู่ยุค 2025</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mathematician-grid">
+                <div class="mathematician-card">
+                    <div class="mathematician-avatar">📐</div>
+                    <h6 class="fw-bold">Euclid</h6>
+                    <small class="opacity-75">บิดาแห่งเรขาคณิต</small>
+                    <div class="mt-2">
+                        <span class="badge bg-success">Geometry</span>
+                    </div>
+                </div>
+
+                <div class="mathematician-card">
+                    <div class="mathematician-avatar">🍎</div>
+                    <h6 class="fw-bold">Isaac Newton</h6>
+                    <small class="opacity-75">แคลคูลัส</small>
+                    <div class="mt-2">
+                        <span class="badge bg-warning">Calculus</span>
+                    </div>
+                </div>
+
+                <div class="mathematician-card">
+                    <div class="mathematician-avatar">🔢</div>
+                    <h6 class="fw-bold">Carl Friedrich Gauss</h6>
+                    <small class="opacity-75">สถิติ</small>
+                    <div class="mt-2">
+                        <span class="badge bg-info">Statistics</span>
+                    </div>
+                </div>
+
+                <div class="mathematician-card">
+                    <div class="mathematician-avatar">🧮</div>
+                    <h6 class="fw-bold">Leonhard Euler</h6>
+                    <small class="opacity-75">พีชคณิต</small>
+                    <div class="mt-2">
+                        <span class="badge bg-primary">Algebra</span>
+                    </div>
+                </div>
+
+                <div class="mathematician-card">
+                    <div class="mathematician-avatar">📐</div>
+                    <h6 class="fw-bold">Pythagoras</h6>
+                    <small class="opacity-75">ทฤษฎีบทพีทาโกรัส</small>
+                    <div class="mt-2">
+                        <span class="badge bg-success">Geometry</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Multi-Agent Collaboration Demo -->
+    <section class="collaboration-section">
+        <div class="container">
+            <h2 class="text-center section-title">
+                Multi-Agent AI Collaboration System
+                <br><small class="fs-6 text-muted">ระบบการทำงานร่วมกันของ AI หลายตัวแบบเรียลไทม์</small>
+            </h2>
+
+            <div class="row">
+                <div class="col-lg-6">
+                    <h4 class="text-center mb-4">🤝 Harmony Mode</h4>
+                    <div class="ai-chat-preview">
+                        <div class="ai-message">
+                            <strong>Euclid:</strong> นักเรียนลองดูสามเหลี่ยมนี้สิ หากเราทราบความยาวสองด้าน
+                            จะหาด้านที่สามได้อย่างไร?
+                        </div>
+                        <div class="ai-message right">
+                            <strong>Pythagoras:</strong> นั่นแหละ! ใช้ทฤษฎีบทของข้าได้เลย a² + b² = c² ลองคำนวณดูสิ
+                        </div>
+                        <div class="ai-message">
+                            <strong>Euclid:</strong> ถูกต้อง! และเมื่อได้คำตอบแล้ว ลองใช้ Desmos Geometry
+                            สร้างรูปดูจะเห็นภาพชัดเจนขึ้น
+                        </div>
+                        <div class="typing-indicator">
+                            นักเรียนกำลังพิมพ์
+                            <div class="typing-dots">
+                                <span></span>
+                                <span></span>
+                                <span></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6">
+                    <h4 class="text-center mb-4">⚔️ Academic Debate Mode</h4>
+                    <div class="ai-chat-preview">
+                        <div class="ai-message">
+                            <strong>Newton:</strong> แคลคูลัสเป็นเครื่องมือที่ทรงพลังที่สุดในคณิตศาสตร์!
+                            สามารถหาพื้นที่ใต้โค้งได้อย่างแม่นยำ
+                        </div>
+                        <div class="ai-message right">
+                            <strong>Leibniz:</strong> เดี๋ยวก่อน Newton! การเขียนสัญลักษณ์ของข้าง่ายกว่านะ ∫ และ d/dx
+                            เข้าใจง่ายกว่า
+                        </div>
+                        <div class="ai-message">
+                            <strong>Newton:</strong> แต่วิธีการของข้าใช้ได้จริงในการคำนวณการเคลื่อนที่ของดาวเคราะห์!
+                        </div>
+                        <div class="ai-message right">
+                            <strong>Leibniz:</strong> ทั้งสองวิธีมีจุดแข็งต่างกัน นักเรียนลองเปรียบเทียบดูสิ
+                            ใครจะเหมาะกับโจทย์นี้มากกว่า?
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-5">
+                <div class="demo-preview d-inline-block">
+                    <h5 class="mb-3">🎯 ผลลัพธ์จากการโต้วาทีทางวิชาการ</h5>
+                    <p class="mb-2">✅ นักเรียนเห็นมุมมองที่หลากหลาย</p>
+                    <p class="mb-2">✅ พัฒนาทักษะการคิดเชิงวิพากษ์</p>
+                    <p class="mb-0">✅ เข้าใจเหตุผลเบื้องหลังแต่ละวิธี</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5 นวัตกรรมหลักของ PLAMA -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title">5 นวัตกรรมหลักที่ทำให้ PLAMA ไม่เหมือนใคร</h2>
+            <div class="row g-4">
+                <div class="col-lg-12">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-grid-3x3-gap"></i>
+                        </div>
+                        <h4>7-Dimensional Interactive Mathematical Toolkit</h4>
+                        <p>ชุดเครื่องมือเชิงโต้ตอบทางคณิตศาสตร์แบบ 7 มิติ ที่ไม่เหมือน ChatGPT หรือ AI chatbots
+                            ทั่วไปที่จำกัดอยู่ในรูปแบบ text-based เท่านั้น</p>
+                        <div class="mt-3">
+                            <span class="innovation-badge">Text Mode</span>
+                            <span class="innovation-badge">Math Mode</span>
+                            <span class="innovation-badge">Graph Mode</span>
+                            <span class="innovation-badge">Geometry Mode</span>
+                            <span class="innovation-badge">3D Mode</span>
+                            <span class="innovation-badge">Canvas Mode</span>
+                            <span class="innovation-badge">Tiles Mode</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                        <h4>Cross-Temporal Learning Experience</h4>
+                        <p>ประสบการณ์การเรียนรู้ข้ามกาลเวลาพร้อมนักคณิตศาสตร์ชื่อดังในประวัติศาสตร์ 15 คน
+                            ที่เดินทางข้ามเวลามาสู่ยุค 2025</p>
+                        <div class="mt-3">
+                            <span class="innovation-badge">15 Digital Personas</span>
+                            <span class="innovation-badge">Historical Learning</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                        <h4>Multi-Agent AI Collaboration</h4>
+                        <p>ระบบการทำงานร่วมกันของ AI หลายตัวได้แบบเรียลไทม์ ผ่าน Harmony Mode และ Academic Debate Mode
+                        </p>
+                        <div class="mt-3">
+                            <span class="innovation-badge">Harmony Mode</span>
+                            <span class="innovation-badge">Academic Debate</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-diagram-2"></i>
+                        </div>
+                        <h4>Dual-Mode Educational Architecture</h4>
+                        <p>ระบบผู้ช่วยสอนคณิตศาสตร์ AI ที่ตอบโจทย์ทั้งการเรียนและการสอน ทั้ง Student Mode และ Lecturer
+                            Mode</p>
+                        <div class="mt-3">
+                            <span class="innovation-badge">Student Mode</span>
+                            <span class="innovation-badge">Lecturer Mode</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="bi bi-cpu-fill"></i>
+                        </div>
+                        <h4>Adaptive AI Reasoning Engine</h4>
+                        <p>ระบบผู้ช่วยสอนคณิตศาสตร์ที่เน้นการคิดเชิงเหตุผลขั้นสูงแบบปรับตัวได้ ใช้ OpenAI GPT-5
+                            Reasoning Model</p>
+                        <div class="mt-3">
+                            <span class="innovation-badge">GPT-5 Reasoning</span>
+                            <span class="innovation-badge">Adaptive Learning</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- มาตรฐานที่ตอบสนอง -->
+    <section class="py-5" style="background: linear-gradient(135deg, var(--light-color) 0%, #f0f7ff 100%);">
+        <div class="container">
+            <h2 class="text-center section-title">มาตรฐานที่ 3: กระบวนการจัดการเรียนการสอนที่เน้นผู้เรียนเป็นสำคัญ</h2>
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-hover"
+                            style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 6px 20px rgba(44, 123, 229, 0.08);">
+                            <thead
+                                style="background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); color: white;">
+                                <tr>
+                                    <th style="width: 10%;">ตัวบ่งชี้</th>
+                                    <th style="width: 45%;">รายละเอียด</th>
+                                    <th style="width: 45%;">การตอบสนองของ PLAMA</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="fw-bold">3.1</td>
+                                    <td>จัดการเรียนรู้ผ่านกระบวนการคิดและปฏิบัติจริง และสามารถนำไปประยุกต์ใช้ในชีวิตได้
+                                    </td>
+                                    <td>
+                                        <strong>• Socratic Method & Inquiry-based Learning</strong><br>
+                                        ระบบใช้วิธีการถาม-ตอบแบบโสกราติส เพื่อกระตุ้นให้นักเรียนคิดวิเคราะห์<br><br>
+                                        <strong>• Interactive Math Tools (Desmos, GeoGebra)</strong><br>
+                                        บูรณาการเครื่องมือคณิตศาสตร์เชิงโต้ตอบ เพื่อการเรียนรู้แบบปฏิบัติจริง<br><br>
+                                        <strong>• Problem-Based Learning</strong><br>
+                                        การเรียนรู้ผ่านการแก้ปัญหาคณิตศาสตร์ที่เชื่อมโยงกับชีวิตจริง
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">3.2</td>
+                                    <td>ใช้สื่อ เทคโนโลยีสารสนเทศ และแหล่งการเรียนรู้ที่เอื้อต่อการเรียนรู้</td>
+                                    <td>
+                                        <strong>• AI Technology with GPT-5</strong><br>
+                                        ใช้เทคโนโลยี AI ขั้นสูงในการสร้างบทเรียนและตอบคำถามแบบเรียลไทม์<br><br>
+                                        <strong>• Multimedia Integration</strong><br>
+                                        รวมสื่อมัลติมีเดียหลากหลายรูปแบบ เพื่อเพิ่มประสิทธิภาพการเรียนรู้<br><br>
+                                        <strong>• Real-time Feedback System</strong><br>
+                                        ระบบให้ข้อมูลป้อนกลับทันทีเพื่อปรับปรุงการเรียนรู้อย่างต่อเนื่อง
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">3.3</td>
+                                    <td>มีการบริหารจัดการชั้นเรียนเชิงบวก</td>
+                                    <td>
+                                        <strong>• Adaptive Learning System</strong><br>
+                                        ระบบปรับเนื้อหาและวิธีการสอนตามความสามารถของนักเรียนแต่ละคน<br><br>
+                                        <strong>• Mathematician Mode เสริมแรงบันดาลใจ</strong><br>
+                                        โหมดนักคณิตศาสตร์ชื่อดัง 15 คน เพื่อสร้างแรงบันดาลใจและทัศนคติที่ดี<br><br>
+                                        <strong>• Supportive AI Interaction</strong><br>
+                                        ปฏิสัมพันธ์ AI ที่ให้กำลังใจและสนับสนุนการเรียนรู้อย่างเป็นมิตร
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">3.4</td>
+                                    <td>ตรวจสอบและประเมินผู้เรียนอย่างเป็นระบบ และนำผลมาพัฒนาผู้เรียน</td>
+                                    <td>
+                                        <strong>• AI-powered Assessment Analytics</strong><br>
+                                        การประเมินผลด้วย AI ที่วิเคราะห์ข้อมูลการเรียนรู้อย่างละเอียด<br><br>
+                                        <strong>• Continuous Learning Progress Tracking</strong><br>
+                                        ติดตามความก้าวหน้าการเรียนรู้อย่างต่อเนื่องและเป็นระบบ<br><br>
+                                        <strong>• Personalized Learning Path</strong><br>
+                                        สร้างเส้นทางการเรียนรู้เฉพาะบุคคลตามผลการประเมิน
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="fw-bold">3.5</td>
+                                    <td>มีการแลกเปลี่ยนเรียนรู้และให้ข้อมูลสะท้อนกลับ
+                                        เพื่อพัฒนาและปรับปรุงการจัดการเรียนรู้</td>
+                                    <td>
+                                        <strong>• Interactive AI Dialogue</strong><br>
+                                        การสนทนาแบบโต้ตอบกับ AI เพื่อแลกเปลี่ยนความคิดและแนวคิด<br><br>
+                                        <strong>• Instant Feedback Mechanism</strong><br>
+                                        ระบบให้ข้อมูลสะท้อนกลับทันทีเพื่อการปรับปรุงการเรียนการสอน
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- เทคโนโลยีที่ใช้ -->
+    <section class="py-5">
+        <div class="container">
+            <h2 class="text-center section-title">เทคโนโลยีที่ใช้</h2>
+            <div class="row g-4">
+                <div class="col-lg-6">
+                    <div class="feature-card">
+                        <h5 class="mb-3"><i class="bi bi-laptop me-2 text-primary"></i>Frontend Technologies</h5>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-filetype-html h4 text-danger"></i>
+                                    <div class="small fw-bold">HTML5/CSS3</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-filetype-js h4 text-warning"></i>
+                                    <div class="small fw-bold">JavaScript ES6+</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-bootstrap h4" style="color: var(--primary-color);"></i>
+                                    <div class="small fw-bold">Bootstrap 5</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-calculator h4" style="color: var(--accent-color);"></i>
+                                    <div class="small fw-bold">KaTeX/MathLive</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="feature-card">
+                        <h5 class="mb-3"><i class="bi bi-server me-2 text-primary"></i>Backend & AI</h5>
+                        <div class="row g-3">
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-file-code h4 text-info"></i>
+                                    <div class="small fw-bold">Python Flask</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-robot h4 text-danger"></i>
+                                    <div class="small fw-bold">OpenAI GPT-5</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-diagram-3 h4 text-warning"></i>
+                                    <div class="small fw-bold">RESTful API</div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="text-center p-3 border rounded" style="border-color: #e8f2ff !important;">
+                                    <i class="bi bi-shield-check h4" style="color: var(--success-color);"></i>
+                                    <div class="small fw-bold">Secure Backend</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- เป้าหมายและผลลัพธ์ที่คาดหวัง -->
+    <section class="py-5" style="background: linear-gradient(135deg, var(--light-color) 0%, #f0f7ff 100%);">
+        <div class="container">
+            <h2 class="text-center section-title">เป้าหมายและผลลัพธ์ที่คาดหวัง</h2>
+            <div class="row">
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="text-center">
+                        <div class="display-3 fw-bold" style="color: var(--primary-color);">80%</div>
+                        <h6>นักเรียนใช้งานระบบ</h6>
+                        <small class="text-muted">เป้าหมายการใช้งานในชั้นเรียน</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="text-center">
+                        <div class="display-3 fw-bold" style="color: var(--success-color);">+15%</div>
+                        <h6>คะแนนสอบเพิ่มขึ้น</h6>
+                        <small class="text-muted">ผลการเรียนรู้ที่ดีขึ้น</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="text-center">
+                        <div class="display-3 fw-bold" style="color: var(--warning-color);">4.0+</div>
+                        <h6>ความพึงพอใจ</h6>
+                        <small class="text-muted">จากคะแนน 5.0</small>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-6 mb-4">
+                    <div class="text-center">
+                        <div class="display-3 fw-bold" style="color: var(--accent-color);">+20%</div>
+                        <h6>ทักษะการคิดวิเคราะห์</h6>
+                        <small class="text-muted">การแก้ปัญหาที่ซับซ้อน</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Enhanced Call to Action -->
+    <section
+        style="background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%); padding: 80px 0; color: white; position: relative;">
+        <div class="container text-center">
+            <h2 class="mb-4">พร้อมสัมผัสอนาคตของการเรียนการสอนคณิตศาสตร์</h2>
+            <p class="lead mb-5">
+                PLAMA คือการผสมผสานระหว่างปัญญาประดิษฐ์และการศึกษาไทย<br>
+                เพื่อสร้างประสบการณ์การเรียนรู้ที่ไม่เหมือนใคร ด้วย 5 นวัตกรรมหลักและนักคณิตศาสตร์ 15 คน
+            </p>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <button class="main-cta-button" onclick="startDemo()">
+                        <i class="bi bi-rocket-takeoff me-2"></i>
+                        เริ่มประสบการณ์การเรียนรู้ใหม่กับ PLAMA
+                    </button>
+                    <p class="mt-3 opacity-75">
+                        <small>สัมผัสนวัตกรรมจากครูผู้สร้างสรรค์ประสบการณ์การเรียนรู้ใหม่</small>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer style="background: var(--dark-color); color: white; padding: 2rem 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-6">
+                    <h5>PLAMA - AI Mathematics Assistant</h5>
+                    <p class="mb-0">นวัตกรรมการเรียนการสอนเพื่ออนาคตของการศึกษาไทย</p>
+                    <p class="small text-muted mt-2">"จากครูผู้ถ่ายทอดความรู้
+                        สู่ครูผู้สร้างสรรค์ประสบการณ์การเรียนรู้ใหม่"</p>
+                </div>
+                <div class="col-lg-6 text-lg-end">
+                    <p class="mb-1"><strong>พัฒนาโดย:</strong> อาจารย์พฤฒิพงศ์ โลหะสุวรรณ์</p>
+                    <p class="mb-1"><strong>กลุ่มสาระการเรียนรู้คณิตศาสตร์</strong></p>
+                    <p class="mb-0"><strong>โรงเรียนสาธิต มหาวิทยาลัยศิลปากร (มัธยมศึกษา)</strong></p>
+                    <div class="mt-2">
+                        <span class="badge me-2" style="background: var(--primary-color);">AI-Boost-Up 2025</span>
+                        <span class="badge" style="background: var(--accent-color);">รหัสผู้เข้าประกวด: 10451</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Main Demo Function
+        function startDemo() {
+            if (confirm('คุณต้องการเริ่มใช้งานระบบ PLAMA หรือไม่?\n\nระบบจะพาคุณเข้าสู่ประสบการณ์การเรียนรู้คณิตศาสตร์ที่ไม่เหมือนใคร')) {
+                showLoadingTransition();
+                setTimeout(() => {
+                    window.location.href = '/app';
+                }, 3000);
+            }
+        }
+
+        function showTeacherStory() {
+            showModal('เรื่องราวของครูพรึด', `
+                <div>
+                    <h5>จากครูผู้ถ่ายทอดความรู้ สู่ครูผู้สร้างสรรค์ประสบการณ์</h5>
+                    <p>เมื่อครูพรึดพบว่านักเรียนในห้องไม่ชอบเรียนคณิตศาสตร์ เขาไม่ได้แค่ใช้เทคโนโลยีที่มีอยู่ 
+                    แต่ได้ออกแบบประสบการณ์การเรียนรู้ใหม่ที่ผสมผสาน AI กับเครื่องมือการศึกษาอย่างสร้างสรรค์</p>
+                    
+                    <h6 class="mt-4">สิ่งที่ทำให้ PLAMA พิเศษ:</h6>
+                    <ul>
+                        <li><strong>ออกแบบโดยครูเพื่อครู:</strong> ไม่ใช่เทคโนโลยีที่พัฒนาโดยโปรแกรมเมอร์</li>
+                        <li><strong>เข้าใจบริบทการศึกษาจริง:</strong> มาจากประสบการณ์การสอนจริงในห้องเรียนไทย</li>
+                        <li><strong>แก้ปัญหาเฉพาะเจาะจง:</strong> ตอบโจทย์ปัญหาการเรียนคณิตศาสตร์ของนักเรียนไทย</li>
+                        <li><strong>สร้างระบบนิเวศการเรียนรู้:</strong> ไม่ใช่แค่เครื่องมือเดียว แต่เป็นประสบการณ์ที่สมบูรณ์</li>
+                    </ul>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-primary" onclick="startDemo()">สัมผัสผลงานของครูพรึด</button>
+                    </div>
+                </div>
+            `);
+        }
+
+        function showModal(title, content) {
+            const existingModal = document.getElementById('dynamicModal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+
+            const modalHTML = `
+                <div class="modal fade" id="dynamicModal" tabindex="-1">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content" style="border-radius: 15px; border: none;">
+                            <div class="modal-header text-white" style="background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); border-radius: 15px 15px 0 0;">
+                                <h5 class="modal-title">${title}</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                ${content}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+            const modal = new bootstrap.Modal(document.getElementById('dynamicModal'));
+            modal.show();
+        }
+
+        function showLoadingTransition() {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+                color: white;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 9999;
+                font-family: 'Sarabun', sans-serif;
+            `;
+
+            overlay.innerHTML = `
+                <div style="text-align: center;">
+                    <div class="spinner-border text-light mb-4" role="status" style="width: 4rem; height: 4rem;">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <h4 style="color: var(--accent-color);">กำลังโหลดระบบ PLAMA...</h4>
+                    <p class="mt-3 opacity-75 fs-5">เตรียมพร้อมสำหรับประสบการณ์การเรียนรู้คณิตศาสตร์ที่ไม่เหมือนใคร</p>
+                </div>
+            `;
+
+            document.body.appendChild(overlay);
+        }
+
+        // Enhanced scroll effects
+        window.addEventListener('scroll', () => {
+            const scrolled = window.pageYOffset;
+            const floatingElements = document.querySelectorAll('.floating-math');
+
+            floatingElements.forEach((element, index) => {
+                const speed = 0.2 + (index * 0.05);
+                const rotation = scrolled * 0.03;
+                element.style.transform = `translateY(${scrolled * speed}px) rotate(${rotation}deg)`;
+            });
+        });
+
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+
+        // Initialize animations on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const animatedElements = document.querySelectorAll('.feature-card, .toolkit-mode, .mathematician-card');
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+                el.style.transform = 'translateY(30px)';
+                el.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
+                observer.observe(el);
+            });
+
+            // Hero entrance animation
+            const heroContent = document.querySelector('.hero-content');
+            heroContent.style.opacity = '0';
+            heroContent.style.transform = 'translateY(40px)';
+            heroContent.style.transition = 'all 1s ease';
+
+            setTimeout(() => {
+                heroContent.style.opacity = '1';
+                heroContent.style.transform = 'translateY(0)';
+            }, 300);
+        });
+
+        // Add keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && e.target === document.querySelector('.main-cta-button')) {
+                startDemo();
+            }
+            if (e.key === 'Escape') {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('dynamicModal'));
+                if (modal) modal.hide();
+            }
+        });
+    </script>
+</body>
+
+</html>
