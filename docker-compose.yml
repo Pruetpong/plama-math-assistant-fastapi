@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  plama:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: plama-math-assistant
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8001}:8001"
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - FLASK_SECRET_KEY=${FLASK_SECRET_KEY}
+      - PORT=8001
+      - HOST=0.0.0.0
+      - PYTHONUNBUFFERED=1
+    volumes:
+      # Mount static files (optional - for development)
+      # - ./static:/app/static
+      # - ./templates:/app/templates
+
+      # Mount logs directory (optional)
+      # - ./logs:/app/logs
+    networks:
+      - plama-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  plama-network:
+    driver: bridge
+
+# Optional: Add Nginx reverse proxy
+# nginx:
+#   image: nginx:alpine
+#   container_name: plama-nginx
+#   restart: unless-stopped
+#   ports:
+#     - "80:80"
+#     - "443:443"
+#   volumes:
+#     - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+#     - ./nginx/ssl:/etc/nginx/ssl:ro
+#   depends_on:
+#     - plama
+#   networks:
+#     - plama-network
