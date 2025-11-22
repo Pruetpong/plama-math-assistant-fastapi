@@ -709,13 +709,22 @@ function renderKaTeX() {
         return;
     }
 
-    // Use a more targeted selector to improve performance
-    const elements = document.querySelectorAll('.message-content, .card-text');
+    // Use a more comprehensive selector to catch all potential LaTeX content
+    const elements = document.querySelectorAll('.message-content, .card-text, .message-wrapper');
 
     elements.forEach(element => {
         try {
+            // Skip if already processed to avoid re-rendering
+            if (element.hasAttribute('data-katex-rendered')) {
+                return;
+            }
+
             // Check if there's unrendered LaTeX markup before processing
-            if (element.innerHTML.includes('$')) {
+            const hasLaTeX = element.innerHTML.includes('$') ||
+                           element.innerHTML.includes('\\(') ||
+                           element.innerHTML.includes('\\[');
+
+            if (hasLaTeX) {
                 renderMathInElement(element, {
                     delimiters: [
                         { left: "$$", right: "$$", display: true },
@@ -734,11 +743,15 @@ function renderKaTeX() {
                         "\\Q": "\\mathbb{Q}",
                         "\\C": "\\mathbb{C}"
                     },
-                    output: "html" // Using HTML output for better rendering
+                    output: "html", // Using HTML output for better rendering
+                    ignoredTags: ["script", "noscript", "style", "textarea", "pre", "code"]
                 });
+
+                // Mark as rendered to prevent duplicate processing
+                element.setAttribute('data-katex-rendered', 'true');
             }
         } catch (error) {
-            console.error('KaTeX rendering error:', error);
+            console.error('KaTeX rendering error:', error, element);
             // Don't let KaTeX errors crash the application
         }
     });
@@ -757,26 +770,42 @@ function renderMarkdownAndLaTeX(text) {
 
     // Extract and replace display LaTeX blocks ($$...$$)
     protectedText = protectedText.replace(/\$\$([\s\S]*?)\$\$/g, (match, latex) => {
-        const id = `LATEX_BLOCK_${latexBlocks.length}`;
+        const id = `___LATEX_BLOCK_${latexBlocks.length}___`;
         latexBlocks.push({ id, latex: match, isDisplay: true });
         return id;
     });
 
     // Extract and replace inline LaTeX blocks ($...$)
-    protectedText = protectedText.replace(/\$([^\$]*?)\$/g, (match, latex) => {
-        const id = `LATEX_BLOCK_${latexBlocks.length}`;
+    protectedText = protectedText.replace(/\$([^\$]+?)\$/g, (match, latex) => {
+        const id = `___LATEX_BLOCK_${latexBlocks.length}___`;
         latexBlocks.push({ id, latex: match, isDisplay: false });
         return id;
     });
 
     // Parse the markdown with LaTeX blocks protected
-    const html = marked.parse(protectedText);
+    let html = marked.parse(protectedText);
 
-    // Restore LaTeX blocks
+    // Restore LaTeX blocks using replaceAll with global regex for safety
     let restoredHtml = html;
     latexBlocks.forEach(block => {
-        restoredHtml = restoredHtml.replace(block.id, block.latex);
+        // Use global regex replace to ensure all occurrences are replaced
+        const escapedId = block.id.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(escapedId, 'g');
+        restoredHtml = restoredHtml.replace(regex, block.latex);
     });
+
+    // Verify all placeholders were replaced
+    const remainingPlaceholders = restoredHtml.match(/___LATEX_BLOCK_\d+___/g);
+    if (remainingPlaceholders) {
+        console.warn('Some LaTeX placeholders were not restored:', remainingPlaceholders);
+        // Try to restore any remaining placeholders
+        remainingPlaceholders.forEach(placeholder => {
+            const index = parseInt(placeholder.match(/\d+/)[0]);
+            if (latexBlocks[index]) {
+                restoredHtml = restoredHtml.replace(new RegExp(placeholder, 'g'), latexBlocks[index].latex);
+            }
+        });
+    }
 
     // Create a container to hold the content
     const container = document.createElement('div');
@@ -2752,11 +2781,6 @@ function appendMessage(message, isUser = true) {
                     scientistBadge.innerHTML = `${scientist.icon} ${scientist.display_name}`;
                     messageContent.appendChild(scientistBadge);
                 }
-
-                // Render LaTeX after adding content to DOM
-                setTimeout(() => {
-                    renderKaTeX();
-                }, 0);
             }
         }
     } catch (error) {
@@ -2770,6 +2794,13 @@ function appendMessage(message, isUser = true) {
 
     // Append to chat messages
     elements.chatMessages.appendChild(messageWrapper);
+
+    // Render LaTeX after adding content to DOM
+    if (!isUser) {
+        requestAnimationFrame(() => {
+            renderKaTeX();
+        });
+    }
 
     // Mark content as changed for scrolling decisions
     appState.lastContentChange = Date.now();
@@ -3788,6 +3819,9 @@ async function sendToAPI(message) {
                             // Update existing message content
                             const messageContent = lastBotElement.querySelector('.message-content');
                             if (messageContent) {
+                                // Remove the rendered attribute to allow re-rendering
+                                messageContent.removeAttribute('data-katex-rendered');
+
                                 messageContent.innerHTML = renderMarkdownAndLaTeX(fullResponse);
 
                                 // Render KaTeX for updated content
